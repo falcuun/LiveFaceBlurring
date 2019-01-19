@@ -17,12 +17,11 @@ int main()
 
 	cv::Mat image;
 
-	cv::namedWindow("Image", cv::WINDOW_NORMAL);
+	cv::namedWindow("Face", cv::WINDOW_NORMAL);
 	while (vc.isOpened())
 	{
 		vc >> image;
-
-		cv::imshow("Image", image);
+		detectFaces(image);
 		if (cv::waitKey(30) == 27)
 		{
 			vc.release();
@@ -35,15 +34,23 @@ void detectFaces(cv::Mat image)
 {
 	std::vector<cv::Rect> faces;
 	cv::Mat gray_image;
+	cv::Mat faceROI;
 
 	cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
-
 	face.detectMultiScale(gray_image, faces, 1.1, 2, 0, cv::Size(30, 30));
 
 	for (size_t i = 0; i < faces.size(); i++)
 	{
-		cv::Point center(faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5);
-		
-		cv::Mat faceROI = gray_image(faces[i]);
+		faceROI = gray_image(faces[i]);
+	}
+
+	cv::Mat blank_image(image.size[0], image.size[1], CV_8UC3, cv::Scalar(0, 0, 0));
+	if (faceROI.empty())
+	{
+		cv::imshow("Face", blank_image);
+	}
+	else
+	{
+		cv::imshow("Face", faceROI);
 	}
 }
