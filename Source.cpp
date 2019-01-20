@@ -17,7 +17,7 @@ int main()
 
 	cv::Mat image;
 
-	cv::namedWindow("Face", cv::WINDOW_NORMAL);
+	cv::namedWindow("Face", cv::WINDOW_AUTOSIZE);
 	while (vc.isOpened())
 	{
 		vc >> image;
@@ -39,11 +39,14 @@ void detectFaces(cv::Mat image)
 	cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
 	face.detectMultiScale(gray_image, faces, 1.1, 2, 0, cv::Size(30, 30));
 
+	int rect_x, rect_y, rect_w, rect_h;
+
 	for (size_t i = 0; i < faces.size(); i++)
 	{
-		faceROI = gray_image(faces[i]);
+		cv::Rect2d faceRegion = cv::Rect2d(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
+		faceROI = image(faceRegion);
+		cv::blur(image(faceRegion), image(faceRegion), cv::Size(50, 50));
 	}
-
 	cv::Mat blank_image(image.size[0], image.size[1], CV_8UC3, cv::Scalar(0, 0, 0));
 	if (faceROI.empty())
 	{
@@ -51,6 +54,7 @@ void detectFaces(cv::Mat image)
 	}
 	else
 	{
-		cv::imshow("Face", faceROI);
+		cv::Rect2d();
+		cv::imshow("Face", image);
 	}
 }
